@@ -55,18 +55,15 @@ public class UserController {
 	
 	@PutMapping("/{id}")
 	public User updateUser(@RequestBody User updateData, @PathVariable("id") long id) {
-		User user = userRepository.findById(id)
-								  .orElseThrow(() -> new ResourceNotFoundException("User not Found"));
+		User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not Found"));
 		
-		Optional<User> findUserByEmail = userRepository.findUserByEmail(updateData.getEmail());
-		if(findUserByEmail.isPresent()) {
-			throw new IllegalStateException("Email Taken");
-		} else {
-			user.setFirstName(updateData.getFirstName());
-			user.setLastName(updateData.getLastName());
-			user.setEmail(updateData.getEmail());
-			return userRepository.save(user);
-		}	
+		if(user.getEmail().equals(updateData.getEmail())) {
+				user.setFirstName(updateData.getFirstName());
+				user.setLastName(updateData.getLastName());
+				return userRepository.save(user);	
+			}else {
+				throw new IllegalStateException("Updation in mail is not allowed");
+			}
 	}
 	
 	@DeleteMapping("/{id}") 
